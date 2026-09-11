@@ -1,0 +1,30 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Alex",
+      "email": "alex@example.com",
+      "project_ids": [1]
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "title": "CLI Tool",
+      "description": "School project",
+      "due_date": "2026-12-01",
+      "owner_id": 1,
+      "task_ids": [1],
+      "contributor_ids": []
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Write file I/O logic",
+      "project_id": 1,
+      "assigned_to_id": 1,
+      "status": "complete"
+    }
+  ]
+}
