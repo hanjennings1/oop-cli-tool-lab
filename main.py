@@ -4,6 +4,9 @@ from models.user import User
 from models.project import Project
 from models.task import Task
 
+from rich.console import Console
+from rich.table import Table
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -43,6 +46,8 @@ def main():
     args = parser.parse_args()
 
     users, projects, tasks = load_data()
+    console = Console()
+
 
     if args.command == "add-user":
     # Create a new User from the --name/--email flags
@@ -51,13 +56,22 @@ def main():
         save_data(users, projects, tasks)  # persist the new user immediately
         print(f"Created user: {user}")
 
-    elif args.command == "list-users":
+    elif args.command == "list-users":      # USING RICH TO FORMAT
         # Read-only command [no save_data() call needed]
         if not users:
-            print("No users found.")
+            console.print("[yellow]No users found.[/yellow]")  # styled warning text, no table needed
         else:
+            table = Table(title="Users")  # rich table with a heading, replaces plain print loop
+            table.add_column("ID", style="cyan")        # column-level color styling
+            table.add_column("Name", style="magenta")
+            table.add_column("Email")                    # no style = default color
+            table.add_column("Projects", justify="right")  # right-align since it's a number
+
             for user in users:
-                print(user)  # uses User.__str__ for friendly CLI output
+                # add_row() requires string values, so ints get converted with str()
+                table.add_row(str(user.id), user.name, user.email, str(len(user.projects)))
+
+            console.print(table)  # renders the table with borders/colors; regular print() won't work here
 
     elif args.command == "add-project":
         # Look up the User whose name matches --user; None if no match found
@@ -71,19 +85,32 @@ def main():
             save_data(users, projects, tasks)  # persist the new project immediately
             print(f"Created project: {project}")
 
-    elif args.command == "list-projects":
+    elif args.command == "list-projects":      # USING RICH TO FORMAT
         # Look up the User whose name matches --user; None if no match found
         owner = next((u for u in users if u.name == args.user), None)
         if owner is None:
-            print(f"No user found with name '{args.user}'.")
+            console.print(f"[yellow]No user found with name '{args.user}'.[/yellow]")
         else:
             # Use the User -> Project relationship directly, rather than
             # filtering the full projects list
             if not owner.projects:
-                print(f"{owner.name} has no projects.")
+                console.print(f"[yellow]{owner.name} has no projects.[/yellow]")
             else:
+                table = Table(title=f"Projects for {owner.name}")
+                table.add_column("ID", style="cyan")
+                table.add_column("Title", style="magenta")
+                table.add_column("Due Date")
+                table.add_column("Tasks", justify="right")
+
                 for project in owner.projects:
-                    print(project)  # uses Project.__str__ for friendly CLI output
+                    table.add_row(
+                        str(project.id),
+                        project.title,
+                        str(project.due_date) if project.due_date else "—",
+                        str(len(project.tasks)),
+                    )
+
+                console.print(table)
 
     elif args.command == "add-task":
         # Look up the Project whose title matches --project; None if no match found
