@@ -38,3 +38,14 @@ class User(Person):
 
     def __repr__(self):
         return f"User(id={self.id!r}, name={self.name!r}, email={self.email!r})"
+
+    def to_dict(self):
+        # Converts this User into a plain dict so it can be saved as JSON
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            # Save only project IDs, not full Project objects, to avoid circular references
+            # (a Project also points back to its owner)
+            "project_ids": [p.id for p in self.projects],
+        }
