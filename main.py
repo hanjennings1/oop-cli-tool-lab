@@ -8,7 +8,7 @@ from rich.console import Console
 from rich.table import Table
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="project-tracker",
         description="A CLI tool for managing users, projects, and tasks."
@@ -43,7 +43,7 @@ def main():
     complete_task_parser = subparsers.add_parser("complete-task", help="Mark a task as complete")
     complete_task_parser.add_argument("--task", required=True, help="Task ID")
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     users, projects, tasks = load_data()
     console = Console()
