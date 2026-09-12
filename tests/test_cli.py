@@ -26,3 +26,9 @@ def test_list_users_empty_cli(temp_data_dir, capsys):
     main(["list-users"])
     captured = capsys.readouterr()
     assert "No users found" in captured.out
+
+
+def test_add_user_invalid_email_cli(temp_data_dir, capsys):
+    main(["add-user", "--name", "Bad", "--email", "bademail"])
+    captured = capsys.readouterr()
+    assert "Error: Invalid email: bademail" in captured.out

@@ -50,8 +50,12 @@ def main(argv=None):
 
 
     if args.command == "add-user":
-    # Create a new User from the --name/--email flags
-        user = User(args.name, args.email)
+        # Create a new User from the --name/--email flags
+        try:
+            user = User(args.name, args.email)
+        except ValueError as e:
+            print(f"Error: {e}")
+            return
         users.append(user)
         save_data(users, projects, tasks)  # persist the new user immediately
         print(f"Created user: {user}")
